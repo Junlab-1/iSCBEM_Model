@@ -21,7 +21,7 @@ suppressMessages({
 source("~/Code/LJ.function.R")
 setwd("/home/DX6/jwulab/S227384/data/seiya/Rrun/NMmodel_run")
 options(Seurat.object.assay.version = "v3")
-source("main.function.R")
+source("main.function.R") # This file downloaded from https://zenodo.org/records/12189592
 ## loading data
 # day0
 day0data<-Read10X(data.dir="/path/iSCBEMd0_offical/outs/filtered_feature_bc_matrix/")
