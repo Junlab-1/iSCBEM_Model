@@ -1,5 +1,5 @@
-# 2024.10.30
 # make new fasta and gtf for transgenes
+#!/bin/bash
 cellranger mkref --genome=onlynew4_genome --fasta=Newdna4.fa --genes=New_starts4.gtf
 # call for new transgenes expresstion
 cellranger count --id=iSCBEMd0_new10 --transcriptome=../specifichumanindex/OnlyNewGenes4/onlynew4_genome/ --fastqs=../usftp21.novogene.com/01.RawData/LW539/ --sample=iSCBEM_Day0 --create-bam=false --include-introns=true
