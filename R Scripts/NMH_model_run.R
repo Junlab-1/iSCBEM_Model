@@ -19,7 +19,7 @@ suppressMessages({
   library(ggpubr)
 })
 source("~/Code/LJ.function.R")
-setwd("/home/DX6/jwulab/S227384/data/seiya/Rrun/NMmodel_run")
+setwd("~/path/NMmodel_run")
 options(Seurat.object.assay.version = "v3")
 source("main.function.R") # This file downloaded from https://zenodo.org/records/12189592
 ## loading data
