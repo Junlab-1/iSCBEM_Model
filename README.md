@@ -15,3 +15,5 @@ The data analysis for this project is divided into two main parts:
 - **Contents**: R scripts.
 
 For more detailed information, please refer to the respective scripts and documentation within this repository.
+
+*To avoid potential information leakage risks, all absolute paths have been removed before uploading the code. Readers are advised to configure the path information based on their local environment.
