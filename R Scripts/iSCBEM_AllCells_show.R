@@ -1,4 +1,4 @@
-# 12.01.2024
+# 12.02.2024
 # Integration and Visualization of All Cells in Seurat (v5.0.1)
 rm(list=ls())
 suppressMessages({
@@ -28,7 +28,7 @@ setwd("~/path/NMmodel_run")
 options(Seurat.object.assay.version = "v3")
 alldata<-readRDS("iSCBEM_all.rdata") # load rds data which is saved from NMH_model_run.R
 predict_out<-readRDS("Predict_out.rdata")
-# load cell types annotated by  NMH_model_run.R
+# load cell types annotated by NMH_model_run.R
 alldata@meta.data$ct_nmmodel<-NA
 rownames(predict_out$full.anno)<-predict_out$full.anno$query_cell
 ctmat<-predict_out$full.anno[rownames(alldata@meta.data),c("query_cell","pred_EML")]
@@ -42,7 +42,7 @@ ctcolor<-c("Zygote"="#999999","2–4 cell"="#F39B7E","8 cell"="#F8766C","AdvMes"
            "Morula"="#FF7E0E","Mesoderm"="#00C1A7","Prelineage"="#C49C93","PriS"="#F862DF",
            "STB"="#F7B6D2","TE"="#00B5ED","YSE"="#EA618E","Ambiguous"="#666666","low_cor"="#666666",
            "nb_failed"="#666666")
-# remove unknown cells draw again
+# remove unknown cells
 alldata@meta.data$nmctindex<-!alldata$ct_nmmodel%in%c("Ambiguous","low_cor","nb_failed")
 alldata2<-subset(alldata,subset= nmctindex==T)
 alldata2.list <- SplitObject(alldata2, split.by = "sampletype")
@@ -81,6 +81,15 @@ pcause=90
 alldata2 <- FindNeighbors(object = alldata2, dims = 1:pcause)
 alldata2 <- FindClusters(object = alldata2, resolution = 1)
 alldata2 <- RunUMAP(object = alldata2, reduction="harmony", dims = 1:pcause)
+##================ 1. show UMAP of all cells ========================================
+ctcolor<-c("Zygote"="#999999","2–4 cell"="#F39B7E","8 cell"="#F8766C","AdvMes"="#E9842C",
+           "Amnion"="#E71F18","Axial_Mes"="#084334","CTB"="#9CA700","DE"="#A3C8DD",
+           "Epiblast"="#00B813","Erythroblasts"="#393A79","EVT"="#53B885",
+           "ExE_Mes"="#0085ED","HEP"="#00EBEC","Hypoblast"="#7B95FF","ICM"="#BB81FF",
+           "Morula"="#FF7E0E","Mesoderm"="#00C1A7","Prelineage"="#C49C93","PriS"="#F862DF",
+           "STB"="#F7B6D2","TE"="#00B5ED","YSE"="#EA618E","Ambiguous"="#666666","low_cor"="#666666",
+           "nb_failed"="#666666")
+
 pdf(file = paste("./alldata2_harmony_cluster", pcause,".pdf",sep = ""),width = 10,height = 8)
 print(DimPlot(object = alldata2,reduction = "umap", label = T,pt.size = 0.3))
 dev.off()
@@ -92,31 +101,24 @@ print(DimPlot(object = alldata2,reduction = "umap", group.by = "ct_nmmodel",shap
         scale_color_manual(values = ctcolor)+
         scale_shape_manual(values = c("Day0"=15,"Day3"=18,"Day5"=16,"Day7"=17)))
 dev.off()
+## ===============================================================================
 
-ctcolor<-c("Zygote"="#999999","2–4 cell"="#F39B7E","8 cell"="#F8766C","AdvMes"="#E9842C",
-           "Amnion"="#E71F18","Axial_Mes"="#084334","CTB"="#9CA700","DE"="#A3C8DD",
-           "Epiblast"="#00B813","Erythroblasts"="#393A79","EVT"="#53B885",
-           "ExE_Mes"="#0085ED","HEP"="#00EBEC","Hypoblast"="#7B95FF","ICM"="#BB81FF",
-           "Morula"="#FF7E0E","Mesoderm"="#00C1A7","Prelineage"="#C49C93","PriS"="#F862DF",
-           "STB"="#F7B6D2","TE"="#00B5ED","YSE"="#EA618E","Ambiguous"="#666666","low_cor"="#666666",
-           "nb_failed"="#666666")
-# 1.2 Only day7 all cell UMAP
+## =============== 2 Only day7 all cell UMAP =====================================
 D7cells<-names(alldata2$sampletype[alldata2$sampletype=="Day7"])
 alldata2@meta.data$D7_show<-alldata2$ct_nmmodel
 alldata2@meta.data$D7_show[!alldata2$sampletype=="Day7"]="othercells"
-
 pdf(file = "iSCBEM_alldata2_harmony_nmcelltypedim90_onlyD7_gray.pdf",width = 8,height = 7)
 print(DimPlot(object = alldata2, reduction = "umap", group.by = "D7_show",pt.size = .1)+
         scale_color_manual(values = c(ctcolor,"othercells"="gray")))
 dev.off()
-# Only D7
 pdf(file = "iSCBEM_alldata2_harmony_nmcelltypedim90_onlyD7.pdf",width = 8,height = 7)
 print(DimPlot(object = alldata2,cells = D7cells, reduction = "umap", group.by = "ct_nmmodel",pt.size = .1)+
         scale_color_manual(values = c(ctcolor,"othercells"="gray"))+
         scale_shape_manual(values =17))
 dev.off()
+## ===============================================================================
 
-# 2. celltype percent
+# ============== 3. celltype percent bar plot ====================================
 predict_out$full.anno$sample<-NA
 predict_out$full.anno$sample[grepl("_1",predict_out$full.anno$query_cell)]<-"Day0"
 predict_out$full.anno$sample[grepl("_2",predict_out$full.anno$query_cell)]<-"Day3"
@@ -135,12 +137,11 @@ for (i in unique(predict_out$full.anno$sample)) {
   }
 }
 alltable<-table_type
-
 colnames(alltable)<-c("Stage","Celltype","Cellnumber")
 table_sample_type<-as.data.frame(alltable)
 table_sample_type$Stage<-factor(table_sample_type$Stage)
-table_sample_type$Celltype<-as.factor(table_sample_type$Celltype)                                                             ##
-table_sample_type$Cellnumber<-as.numeric(as.matrix(table_sample_type$Cellnumber))                                                 ##
+table_sample_type$Celltype<-as.factor(table_sample_type$Celltype)
+table_sample_type$Cellnumber<-as.numeric(as.matrix(table_sample_type$Cellnumber))
 library(plyr)
 alltable_percent<-ddply(table_sample_type,"Stage",transform,percent_weight=Cellnumber/sum(Cellnumber)*100)
 alltable_percent$Celltype2 <- alltable_percent$Celltype
@@ -164,8 +165,9 @@ p_bar2<-ggplot(alltable_percent_D7,aes(x=Stage,y=percent_weight,fill=Celltype))+
   facet_grid(rows = vars(Celltype2),scales = "free_y",space = "free")+
   coord_cartesian(clip = 'off')
 ggsave("all_celltype_percent_D7.pdf", p_bar2, width=4 ,height=6)
+## ===============================================================================
 
-# 4. markergenes heatmap
+## ======================= 4. markergenes heatmap ================================
 TopMatrix<-alldata2@assays$RNA@data[,]
 celltype_specieslist<-unique(alldata2$ct_nmmodel)
 for (i in 1:length(celltype_specieslist)) {
@@ -193,9 +195,8 @@ pheatmap(mat = MMM_order,scale = "row",cluster_cols = F,cluster_rows = F,
          annotation_col = annotation_col, annotation_colors = mycolorsp,
          color = colorRampPalette(c("blue","white","red"))(100),border_color = "white")
 dev.off()
-
 # 4.2 changed heatmap
-# add new genes to alldata2@meta.data
+# add transgenes to alldata2@meta.data
 day0newdata<- Read10X(data.dir="/path/iSCBEMd0_new10/outs/raw_feature_bc_matrix")
 colnames(day0newdata)<-paste0(colnames(day0newdata),"_1")
 d0ng <- day0newdata[,names(alldata2$sampletype[alldata2$sampletype=="Day0"])]
@@ -227,11 +228,10 @@ if (identical(colnames(allnew),rownames(alldata2@meta.data))) {
 if (identical(colnames(allnew_mean),rownames(alldata2@meta.data))) {
   alldata2@meta.data<-cbind(alldata2@meta.data,t(allnew_mean))
 }
-# PUROR positive heatmap
+# transgenes annotation
 alldata2@meta.data$ct_NMLT<-"unknown"
 indexPUROR<-which(alldata2$newPUROR_norm>=0.6)
 alldata2@meta.data$ct_NMLT[indexPUROR]<-paste0(alldata2$ct_nmmodel[indexPUROR],"_PUROR")
-# RTTA positive heatmap
 index1       <-which(alldata2$newRTTA_norm>=0.6)
 index2_iYAP  <-which(alldata2$newRTTA_norm>=0.3&alldata2$newiYAP_norm>=0.3 & alldata2$sampletype%in%c("Day0","Day3"))
 index2_iGATA6<-which(alldata2$newRTTA_norm>=0.3&alldata2$newiGATA6_norm>=0.3&alldata2$sampletype%in%c("Day0","Day3"))
@@ -251,7 +251,7 @@ for (i in 1:length(celltype_specieslist)) {
 colnames(MeanMatrix)<-celltype_specieslist
 mgl<-read.table("human_model_top5_genes_order.txt",header = F)
 MarkerMeanMatrix<-MeanMatrix[intersect(mgl[,1],rownames(MeanMatrix)),!colnames(MeanMatrix)=="unknown"]
-# 4.2.1 RTTA heatmap
+## =============== 4.2.1 RTTA positive heatmap ==================================
 MMM_order_RTTA<-MarkerMeanMatrix[,paste0(c("Prelineage","ICM","Epiblast","PriS",
                                            "Amnion","Mesoderm","AdvMes","ExE_Mes",
                                            "Hypoblast","DE","YSE","TE","CTB","STB","HEP"),"_RTTA")]
@@ -268,7 +268,7 @@ pheatmap(mat = MMM_order_RTTA,scale = "row",cluster_cols = F,cluster_rows = F,
          annotation_col = annotation_col, annotation_colors = mycolorsp,
          color = colorRampPalette(c("blue","white","red"))(100),border_color = "white")
 dev.off()
-# 4.2.2 PUROR heatmap
+## =============== 4.2.2 PUROR positive heatmap ================================
 MMM_order_PUROR<-MarkerMeanMatrix[,paste0(c("Prelineage","ICM","Epiblast","PriS",
                                             "Amnion","Mesoderm","AdvMes","ExE_Mes",
                                             "Hypoblast","DE","YSE","TE","CTB","STB","HEP"),"_PUROR")]
@@ -284,8 +284,9 @@ pheatmap(mat = MMM_order_PUROR,scale = "row",cluster_cols = F,cluster_rows = F,
          annotation_col = annotation_col, annotation_colors = mycolorsp,
          color = colorRampPalette(c("blue","white","red"))(100),border_color = "white")
 dev.off()
+## ===============================================================================
 
-# 5 marker genes feature plots.
+## ======= 5 known early embryo development marker genes feature plots ===========
 markerall<-read.table("Public_marker_gene_list.txt",header = T,sep = "\t")
 for (i in 1:ncol(markerall)) {
   imarker<-cbind(markerall[,i],rep(colnames(markerall)[i],length(markerall[,i])))
@@ -310,3 +311,5 @@ for (i in 1:nrow(markers)) {
   )
   dev.off()
 }
+## ===============================================================================
+
