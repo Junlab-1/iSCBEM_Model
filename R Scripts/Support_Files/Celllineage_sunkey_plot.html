@@ -1,0 +1,98 @@
+<html>
+
+<body>
+ <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<div id="sankey_multiple" style="width: 900px; height: 300px;"></div>
+
+<script type="text/javascript">
+  google.charts.load("current", {packages:["sankey"]});
+  google.charts.setOnLoadCallback(drawChart);
+   function drawChart() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'From');
+    data.addColumn('string', 'To');
+    data.addColumn('number', 'Weight');
+    data.addRows([
+	
+	   [ 'ESC Cell', 'Epiblast0', 795 ],
+	   [ 'ESC Cell', 'PriS0', 1 ],
+       [ 'Epiblast0', 'Epiblast3', 321 ],
+       [ 'Epiblast0', 'DE3', 50 ],
+       [ 'Epiblast0', 'Mesoderm3', 38 ],
+       [ 'Epiblast0', 'Hypoblast3', 14 ],
+       [ 'PriS0', 'PriS3', 1 ],
+	   [ 'Epiblast0', 'PriS3', 214 ],
+       [ 'DE3', 'DE5', 15 ],
+       [ 'Epiblast3', 'Epiblast5', 795 ],
+       [ 'Hypoblast3', 'Hypoblast5', 21 ],
+       [ 'Mesoderm3', 'Mesoderm5', 10 ],
+       [ 'Hypoblast3', 'YSE5', 10 ],
+	   [ 'PriS3', 'PriS5', 137 ],
+	   [ 'Epiblast3', 'TE5', 1 ],
+       [ 'Mesoderm5', 'AdvMes7', 63 ],
+       [ 'Epiblast5', 'Amnion7', 10 ],
+       [ 'DE5', 'DE7', 155 ],
+       [ 'Epiblast5', 'Epiblast7', 757 ],
+       [ 'Mesoderm5', 'Mesoderm7', 35 ],
+       [ 'Hypoblast5', 'ExE_Mes7', 5 ],
+       [ 'Hypoblast5', 'Hypoblast7', 81 ],
+       [ 'Hypoblast5', 'HEP7', 13 ],
+       [ 'PriS5', 'PriS7', 84 ],
+       [ 'YSE5', 'YSE7', 10 ],
+	   
+	   [ 'iYAP Cell', 'Amnion0', 19 ], 
+	   [ 'iYAP Cell', 'Epiblast0', 155 ],
+       [ 'iYAP Cell', 'ExE_Mes0', 4 ],
+	   [ 'iYAP Cell', 'TE0', 294 ],
+	   [ 'iYAP Cell', 'Prelineage0', 1 ],
+	   [ 'Amnion0', 'Amnion3', 3 ],
+	   [ 'ExE_Mes0', 'ExE_Mes3', 1 ],
+	   [ 'TE0', 'TE3', 15 ],
+			[ 'Prelineage0', 'TE3', 1 ],
+	   
+	   
+	   [ 'iGATA6 Cell', 'AdvMes0', 1 ],
+	   [ 'iGATA6 Cell', 'DE0', 31 ],
+	   [ 'iGATA6 Cell', 'Epiblast0', 116 ],
+	   [ 'iGATA6 Cell', 'ExE_Mes0', 1 ],
+	   [ 'iGATA6 Cell', 'Hypoblast0', 56 ],
+	   [ 'iGATA6 Cell', 'ICM0', 8 ],
+	   [ 'iGATA6 Cell', 'Prelineage0', 2 ],
+	   [ 'ExE_Mes0', 'Amnion3', 1 ],
+	   [ 'Epiblast0', 'Epiblast3', 1 ],
+	   [ 'Hypoblast0', 'Hypoblast3', 5 ],
+	   [ 'ICM0', 'Hypoblast3', 1 ],
+	   [ 'DE0', 'TE3', 4 ],
+	   	   [ 'AdvMes0', 'Amnion3', 1 ],
+		   
+		   
+	   [ 'Amnion3', 'Amnion5', 8 ],
+	   [ 'TE3', 'CTB5', 81 ],
+	   [ 'ExE_Mes3', 'ExE_Mes5', 32 ],
+	   [ 'Hypoblast3', 'Hypoblast5', 1 ],
+	   [ 'TE3', 'STB5', 18 ],
+	   [ 'TE3', 'TE5', 266 ],
+	   [ 'Amnion5', 'Amnion7', 6 ],
+	   [ 'CTB5', 'CTB7', 119 ],
+	   [ 'Hypoblast5', 'Epiblast7', 2 ],
+	   [ 'ExE_Mes5', 'ExE_Mes7', 19 ],
+	   [ 'Hypoblast5', 'Hypoblast7', 2 ],
+	   [ 'STB5', 'STB7', 148 ],
+	   [ 'TE5', 'TE7', 19 ]
+	   
+
+    ]);
+
+    // Set chart options
+    var options = {
+      width: 600,
+    };
+	
+    // Instantiate and draw our chart, passing in some options.
+    var chart = new google.visualization.Sankey(document.getElementById('sankey_multiple'));
+    chart.draw(data, options);
+   }
+</script>
+</body>
+</html>
