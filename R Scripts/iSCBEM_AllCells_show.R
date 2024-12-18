@@ -165,6 +165,53 @@ p_bar2<-ggplot(alltable_percent_D7,aes(x=Stage,y=percent_weight,fill=Celltype))+
   facet_grid(rows = vars(Celltype2),scales = "free_y",space = "free")+
   coord_cartesian(clip = 'off')
 ggsave("all_celltype_percent_D7.pdf", p_bar2, width=4 ,height=6)
+## =========== 3.2 celltype percentage alluvium plot for all cells =======================
+d7stage<-predict_out$full.anno[predict_out$full.anno$sample=="Day7",]
+merge_bar_d7<-cbind(as.matrix(d7stage$pred_EML),as.matrix(d7stage$stage))
+for (i in unique(merge_bar_d7[,2])) {
+  sign<-table(merge_bar_d7[merge_bar_d7[,2]==i,1])
+  singletype_table<-cbind(rep(i,length(sign)),names(sign),as.matrix(sign))
+  rownames(singletype_table)<-NULL
+  if (i==unique(merge_bar_d7[,2])[1]) {
+    table_type<-singletype_table
+  }else{
+    table_type<-rbind(table_type,singletype_table)
+  }
+}
+alltable<-table_type
+colnames(alltable)<-c("Stage","Celltype","Cellnumber")
+table_sample_type<-as.data.frame(alltable)
+table_sample_type$Stage<-factor(table_sample_type$Stage)
+table_sample_type$Celltype<-as.factor(table_sample_type$Celltype) 
+table_sample_type$Cellnumber<-as.numeric(as.matrix(table_sample_type$Cellnumber))
+library(plyr)
+table_sample_type$percent_weight<-table_sample_type[,3]/sum(table_sample_type[,3]) *100
+alltable_percent<-table_sample_type
+write.csv(alltable_percent,file = "All_iSCBEM_D7_CelltypePercent.csv",row.names = F,col.names = T)
+
+atclong <- to_lodes_form(data.frame(alltable_percent),
+                         key = "timeline",
+                         axes = 2:1)
+atclong$stratum <-factor(atclong$stratum,levels = c("Epiblast","PriS","Amnion","Mesoderm","AdvMes",
+                                                    "ExE_Mes","Hypoblast","DE",
+                                                    "CTB","TE","STB","YSE","HEP",
+                                                    "Ambiguous","low_cor","nb_failed",
+                                                    "Early","Late","uncertained","unpredictable"))
+ctcolor_alluvium<-c("Zygote"="#999999","2–4 cell"="#F39B7E","8 cell"="#F8766C","AdvMes"="#E9842C",
+           "Amnion"="#E71F18","Axial_Mes"="#084334","CTB"="#9CA700","DE"="#A3C8DD",
+           "Epiblast"="#00B813","Erythroblasts"="#393A79","EVT"="#53B885",
+           "ExE_Mes"="#0085ED","HEP"="#00EBEC","Hypoblast"="#7B95FF","ICM"="#BB81FF",
+           "Morula"="#FF7E0E","Mesoderm"="#00C1A7","Prelineage"="#C49C93","PriS"="#F862DF",
+           "STB"="#F7B6D2","TE"="#00B5ED","YSE"="#EA618E","Ambiguous"="#D3D3D3","low_cor"="#D3D3D3",
+           "nb_failed"="#D3D3D3","Early"="#A0B5EE","Late"="#E69292","uncertained"="#D3D3D3","unpredictable"="#D3D3D3")
+
+p1<-ggplot(data = atclong,
+       aes(x = timeline, stratum = stratum, alluvium = alluvium,
+           y = percent_weight, label = stratum,fill=stratum)) +
+  geom_alluvium(aes(fill = stratum)) +
+  geom_stratum() + geom_text(stat = "stratum") +
+  theme_bw()+scale_fill_manual(values = ctcolor_alluvium)
+ggsave(p1,filename = "All_D7_trandalluvial.pdf",width = 7,height = 6)
 ## ===============================================================================
 
 ## ======================= 4. markergenes heatmap ================================
