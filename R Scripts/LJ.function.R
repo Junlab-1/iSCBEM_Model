@@ -21,7 +21,6 @@ suppressMessages({
 
 # QC function
 plotQC<-function(seurat_obj,cutinfo="0"){
-  # 提取对象名称
   if (!dir.exists("./QC")) dir.create("./QC", recursive = TRUE)
   obj_name <- deparse(substitute(seurat_obj))
   pdf(file = paste0("./QC/",obj_name,"_count_detail",cutinfo,".pdf"),width = 10,height = 8)
@@ -105,10 +104,10 @@ Featureplot_NMmodel <- function(mat,genelist,filename = "NMmodel_featureplot.pdf
       theme_bw()+theme(legend.position = "bottom")+
       scale_color_viridis_c(option = "viridis")
   }
-  # 保存为 PDF
   combined_plot <- (p[[1]] + p[[2]]) / (p[[3]] + p[[4]])
   pdf(file = filename, width = 10, height = 12)
   print(combined_plot)
   dev.off()
 }
+
 
